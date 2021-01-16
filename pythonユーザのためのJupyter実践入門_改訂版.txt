@@ -1,0 +1,540 @@
+サンプルコード：https://github.com/practical-jupyter/sample-code-2nd
+
+■仮想環境の構築
+  ・仮想環境の作成
+        conda -y python=3.7 -n env2   ※仮想環境の名前をenv2
+  ・仮想環境で実行  　
+        conda activate env2
+        
+  ・仮想環境の無効化  　
+        conda deactivate
+        
+  ・仮想環境でのパッケージのインストール
+        conda install -y -c conda-forge jupyterlab==2.1.5
+        conda install -y pandas==1.0.5
+        
+       ※-yオプションは実行確認を省略する
+         -nオプションは仮想環境の名前を指定する
+         
+  ・パッケージのアップデート
+  　　　conda update pandas
+  　　　
+  ・パッケージの削除
+        conda remove -y pandas
+        
+  ・仮想環境一覧の取得
+        conda env list
+        
+  ・仮想環境の削除
+        conda remove -y -n env2 --all
+        
+■JupyterLabの操作について
+  ・コードの補完機能は入力中にTabキーを押す　※変数やライブラリなどあらかじめ実行は必要
+  
+■JupyterLabで図を表示
+        from IPython.display import Image
+        Image("test.png")
+  
+■Pandasによるデータ可視化
+  ・折れ線グラフ
+         %matplotlib inline
+         import pandas as pd
+
+         ax = pd.Series([1,2,5]).plot()
+         ax.set_title('Line Chart')
+         
+     ・DataFrameからグラフ作成
+         df = pd.DataFrame({'a':[1,2,4], 'b':[4,2,1]})
+         ax = df.plot()
+         sx.set_title('Line Chart')
+         
+     ・Y軸の範囲が異なるグラフ
+         ax = df.plot(secondary_y=['column_name'])
+         ax.set_title('secodary_y')
+         ax.set_ylabel('left_lable_name')
+         ax.right_ax.set_ylabel('right_label_name')
+         
+     ・複数のサブプロットに分割(グラフを分けて表示する)
+         ax1, ax2 = df.plot(subplot=True)
+         ax1.set_title('subplot1')
+         ax2.set_title('subplot2')
+         
+  ・散布図
+         ax = df.plot.scatter(x='col_1', y='col_2')         
+         ax.set_title('Scatter')
+         
+  ・棒グラフ         
+         ax = df.plot.bar()
+         
+     ・対数軸の使用         
+         ax = df.plot.bar(logy=True)
+         ax.legend(bbox_to_anchor=(1,1))  ※凡例の位置を調整
+         
+     ・積み上げ棒グラフ
+         ax = df.plot.bar(stacked=True)
+         ax.set_title('staked')                
+         
+  ・ヒストグラム
+         ax = df['col_1'].hist(bins=100)
+         ax.set_title('Histgram')
+         
+  ・箱ひげ図         
+         ax = df.plot.box()
+         ax.set_title('Box Plot')
+         
+  ・円グラフ
+         ax = df.groupby('col_3')['col_1'].sum().plot.pie()
+         ax.set_title('Pie_Chart')          
+         
+■Matplotlibによるデータ可視化
+  ・グラフ描画の準備
+         import matplotlib.pyplot as plt    ※モジュールのインポート
+         %matplotlib inline   ※ノートブック上にグラフ表示するためのマジックコマンド
+         
+  ・グラフ描画        
+         fig, ax = plt.subplots(1,1)
+         ax.plot([0,1]);
+         
+         ※plotメソッドはX値、Y値として次のようなデータ型を渡せる
+           list,taple,numpy.ndarray,pandas.Series,pandas.DataFrame,スカラ(数量)
+           
+  ・フィギュアとサブプロット
+     ・フィギュアはグラフに関するすべての要素を描画する領域
+     ・サブプロットは軸や目盛り、折れ線、テキストなどグラフに関する要素を格納する領域
+     
+     ・figure()関数でフィギュアオブジェクト生成後に各メソッドを用いてサブプロットを配置する
+       ・add_axes()はサブプロットのサイズと位置を指定してサブプロットを配置する
+       ・add_subplot()は縦横に配列したサブプロットを配置するのに便利
+       ・subplots()は一度に複数のサブプロットオブジェクトを生成できる    
+       
+     ・フィギュアメソッドによるfigureとsubplotの生成 
+         fig, ax = plt.subplots(1,1)
+         
+  ・折れ線グラフ
+         fig, ax = plt.subplots(1,1)
+         ax.plot(x,y); 
+         
+         fig, ax = plt.subplots(1,1, figsize=(15,3))
+         ax.plot(df.index, df['TOEI ANIMATION'], label='TOEI ANIMATION')
+         ax.plot(df.index, df['IG Port'], label='IG Port')
+    
+     ・x軸を共有して2つのY軸を持つ図を作成する場合はtwinx()
+       y軸を共有して2つのX軸を持つ図を作成する場合はtwiny()
+       
+         fig, ax1 = plt.subplots(figsize=(15, 3))
+         ax1.plot(df2.index, df2['Close'], color='b', label='株価')
+         
+         # X軸を共有しY軸を２つ使用する設定
+         ax2 = ax1.twinx()
+         ax2.bar(df2.index, df2['Volume'], color='g', label='出来高', width=2)
+         
+  ・散布図
+         fig, ax = plt.subplots(1,1)
+         ax.scatter(x,y);          ※複数グループ描画する際はscatter()を複数回実行する
+         
+  ・棒グラフ
+         fig, ax = plt.subplots(1,1)
+         ax.bar(x,y);
+         
+         横向き棒グラフ
+         fig, ax = plt.subplots(1,1)
+         ax.barh(x,y);
+         
+     ・棒グラフを横に並べる                                    
+         fig, ax = plt.subplots(1,1)
+         bar_width = 0.3
+         ax.bar(x,y,with=bar_width, label='y1')
+         ax.bar(x+bar_width,y2,with=bar_width, label='y2')
+         ax.bar(x+bar_width*2,y3,with=bar_width, label='y3')  ※データをリストで使う場合はnp.arrayに変換必要            
+     ・棒グラフを縦に並べる   
+         1.y1とy2とy3の和を描画する
+         2.y1とy2の和を重ねて描画する
+         3.y1を重ねて描画する 
+         
+  ・ヒストグラム
+         fig, ax = plt.subplots(1,1)
+         ax.hist(x);  
+      
+      ・binと範囲と線色を指定する 
+         fig, ax = plt.subplots(1,1)
+         ax.hist(x, bins=32, range=(0,200), edgecolor='black'); 
+         
+      ・横向きのヒストにするには引数でorientation='horizontal
+         fig, ax = plt.subplots(1,1)
+         ax.hist(x, bins=32, range=(0,200), orientation='horizontal',edgecolor='black');
+         
+      ・Y軸を対数にするには引数でlog=True         
+         fig, ax = plt.subplots(1,1)
+         ax.hist(x, bins=32, range=(0,200), log=True, edgecolor='black'); 
+         
+      ・累積ヒストグラムを作成するには引数にcumulative=True
+      
+      ・相対度数を表示するには引数にdensity=True
+      
+      ・複数のグループをヒストするにはforでループして重ねて書く     
+         for type_,data in df_master.groupby('type'):
+             ax.hist(data['rating'],range=(1,10), label=type_)
+             
+      ・複数グループを横に並べるには入れ子のリストを作成して描画する
+         types = df['type'].unique()
+         dataset = [df.loc[df['type'] == type_, 'rating'] for type_ in types]
+         
+         fig, ax = plt.subplots(1,1)
+         ax.hist(dataset, range=(1,10), label=types)                   
+                                    
+      ・積み上げヒストを作成するには引数にstacked=True  
+      
+  ・箱ひげ図 
+         fig, ax = plt.subplots(1,1)
+         ax.boxplot(x); 
+
+      ・1個のサブプロットに複数の箱ひげを描く場合は入れ子のリストを作成する 
+      
+  ・円グラフ 
+         fig, ax = plt.subplots(1,1)
+         ax.pie(x, labels=labels); 
+         
+      ・デフォルトでは0°の位置から半時計回りに要素を配置する
+      ・中心座標は(0,0), 半径は1に設定
+     
+      ・開始角度を90°にするには引数startangele=90
+      ・表示順を時計回りにするにはcounterclock=False
+      ・グラフの色を設定したい時は引数colorsでリストかタプル型で設定  
+      
+■Matplotlibの詳細設定 
+  ・フィギュアとサブプロットの書式設定
+      ・フィギュアのタイトル設定はfig.suptitle() 
+      
+      ・サブプロットのタイトル設定はax.set_title()
+      
+      ・figureオブジェクトの書式設定とグラフ描画
+         fig= plt.figure(書式設定)
+         ax = fig.add_subplot(111)
+         ax.plot()
+         
+      ・サブプロット間の余白を設定
+         fig.subplots_adjust(left=0.2, right=0.8, bottom=0.2, top=0.8, wspace=0,5, hspace=0.5)      
+        
+      ・サブプロット自体の書式設定の引数
+         fig.add_subplot(111,title='aa',alpha=0.5, facecolor='pink')
+         
+      ・サブプロットに軸設定を行う為の引数
+         fig.add_subplot(111,sharex,xlim,xlabel,xscale,xticklabels,xticks) ※y軸の場合はylimなど
+         
+  ・グラフの軸と目盛りの設定
+      ・軸範囲を統一した図を描画する場合はsubplotの引数,sharex,shareyを使う
+        
+      ・軸の範囲を図毎で設定するにはax.set_xlim(0,10) or ax.set_ylim(30, 50)
+      
+      ・対数軸にするにはax.set_xscale('log') or ax.set_yscale('log')      
+           
+      ・複数軸を設定にするにはax.twinx() or ax.twiny() 
+      
+      ・軸ラベル設定するにはax.set_xlabel() or ax.set_ylabel()
+      
+      ・主目盛りを設定するにはset_xticks() or set_yticks()にリストで渡す
+            
+      ・主目盛りラベルを設定するにはset_xticklabels() or set_yticklabels()にリストを渡す
+      
+      ・目盛りの書式設定はax.tick_params()  
+      
+      ・軸の参照方法はax.spines['left or right or bottom or top']
+                 
+      ・軸の書式設定の関数
+         ax['right'].set_bounds()
+         ax['right'].set_color()      
+         ax['right'].set_positon()  
+         
+  ・凡例の設定
+      ・凡例の要素を自動判別して描画
+         ax.legend()
+         
+      ・凡例の要素をラベルで指定
+         ax.legend(['sin','cos'])  
+         
+  ・線の書式設定
+      ・グラフ関数の引数で設定出来る ax.plot(x,y,color='b')
+         ■線に設定出来る書式
+           color
+           linewidth
+           linestyle
+           solid_capstyle
+           solid_joinstyle
+           dash_capstyle
+           dash_joinstyle
+           
+  ・色の設定           
+      ・フィギュア、サブプロット、図形、凡例などの線、面、テキストに対して引数で色設定が出来る                                   ■色を設定する引数
+           color
+           facecolor
+           edgecolor
+           alpha
+           
+      ・カラーマップを使えば色の組み合わせ定義を使用出来る
+           import matplotlib.cm as cm
+           
+           cmap = cm.get_cmap(name, lut)
+           
+  ・文字列の書式設定
+      ・テキストオブジェクトに対して引数で文字列の書式を設定出来る             
+         ■フォントの設定引数
+           family
+           style
+           weight
+           size 
+           
+      ・文字列を描画するにはax.text()
+           ax.text(x,y,s,fontdict)
+           
+      ・文字列のテキストボックスの塗りつぶしは引数にbackgroundcolor
+           ax.text(0.1, 0.5,'test', color='white', backgroundcolor='blue')                                               
+      ・文字列を回転するにはtext引数のrotationとrotaion_modeを設定する
+                   
+   ・各設定をまとめたスタイルセットがあり、適用すると書式を一括で変更可能
+      ・スタイル一覧の出力
+           plt.style.available
+           
+      ・スタイルを適用する
+           matplotlib.style.use('ggplot') 
+           
+   ・グラフをファイルに出力するにはsavefig()メソッド
+           fig.savefig(保存ファイル名,format=png')
+           
+■Seabornでデータ可視化           
+  ・APIの概要
+      ・3種類のインターフェイスからグラフを作成できる
+        ・Matplotlibでグラフ描画
+        ・axes-lebelの関数でグラフを描画
+        ・figure-levelの関数でグラフを描画  
+        
+  ・グラフの描画方法
+      ・単体のグラフを描画する = サブプロットオブジェクトを生成する関数を使用(axes-level)
+        関数例：scatterplot,lineplot
+           sns.scatterplot(data=tips, x='total_bill', y='tip')
+        
+      ・複数の種類のグラフ組み合わせる = jointGridオブジェクト生成する関数(figure-level)                                        関数例：jointplot
+           sns.jointplot(data=tips, x='total_bill', y='tip')
+      
+      ・データセットを切り出してグラフを分割する = FacetGridオブジェクトを生成する関数(figure-level)     
+        関数例：relplot(2変数の関係を可視化)
+                catplot(カテゴリデータを可視化)
+                lmplot(回帰を可視化)
+           sns.relplot(data=tips, x='total_bill', y='tip', col='time')
+        
+      ・データの組み合わせからグラフを作成する = PairGridオブジェクトを生成する関数(figure-level)
+           sns.pairplot(data=tips, vars=['total_bill', 'tip', 'size'])   
+           
+  ・整然データとは
+      1.各変数が１つの列で構成されている
+      2.各観測が１つの行で構成されている
+      3.観測単位が１つの表で構成されている
+      
+  ・replot()関数は散布図や折れ線グラフを用いて2つのデータの関係を可視化する
+           sns.relplot(data=tips, x='total_bill', y='tip', kind='scatter') 
+                    
+  ・replot()関数の引数hueを使うと要素を色分けして表示
+           sns.relplot(data=tips, x='total_bill', y='tip', kind='scatter', hue='time')
+           
+  ・replot()関数の引数styleを使うと要素ごとに異なるマーカで描画
+           sns.relplot(data=tips, x='total_bill', y='tip', hue='time', style='day')   
+
+  ・replot()関数で折れ線グラフを描画するには引数kind='line'
+    X軸に同じ値がある場合は平均値で集計され、95%信頼区間が塗りつぶし色で描画される
+           sns.relplot(data=fmri, x='timepoint', y='signal', kind='line')
+    
+  ・replot()関数で引数ciを設定すると塗りつぶし色の描画方法変更が出来る
+           sns.relplot(data=fmri, x='timepoint', y='signal', kind='line', ci='sd')
+           ciの引数の種類
+             ・0-100までのint型:指定したパーセント値の信頼区間
+             ・'sd':標準偏差
+             ・'None':非表示
+
+  ・replot()関数でestimatorにNoneを渡すとデータ集計しない
+           sns.relplot(data=fmri, x='timepoint', y='signal', kind='line', estimator=None)
+           
+  ・replot()関数で引数にcol,rowを使うとサブプロットごとに描画出来る
+           sns.relplot(data=tips, x='total_bill', y='tip',row='smoker', col='time')
+           
+             
+  ・catplot()関数はカテゴリデータをグラフ化する
+  
+  ・catplot()関数でストリッププロットを描画するにはkind='strip'  
+           sns.catplot(data=tips, x='time', y='total_bill', kind='strip')  
+                      
+  ・catplot()関数でY軸をカテゴリにするとグラフが横向きになる
+           sns.catplot(data=tips, x='total_bill', y='time', hue='smoker')
+           
+  ・catplot()関数で引数にjitterをいれると重なった点をランダムにずらす
+           sns.catplot(data=tips, x='time', y='total_bill', jitter=0)
+           
+  ・catplot()関数で引数kind='swarm'にするとビースウォームプロット(蜂群図)が出来る 
+           sns.catplot(data=tips, x='time', y='total_bill', hue='smoker', kind='swarm')
+           
+  ・catplot()関数で引数kind='box'にすると箱ひげ図が出来る  
+           sns.catplot(data=tips, x='time', y='total_bill', kind='box')  
+           
+  ・catplot()関数で引数kind='box'のとき、引数にhueを入れるとサブカテゴリとして並べて描画する
+           sns.catplot(data=tips, x='time', y='total_bill', kind='box', hue='smoker') 
+           
+  ・catplot()関数で引数kind='boxen'とすると、分位数を増やした箱ひげ図を描画できる
+           sns.catplot(data=tips, x='time', y='total_bill', kind='boxen', hue='smoker') 
+           
+  ・catplot()関数で引数kind='violin'とすると、バイオリン図(確率密度を表現したグラフ)を描画する
+           sns.catplot(data=tips, x='time', y='total_bill', kind='violin')  
+  
+  ・バイオリン図で2値カテゴリの場合、左右で分割して描画出来る
+           sns.catplot(data=tips, x='time', y='total_bill', kind='violin', hue='smoker', split=True) 
+           
+  ・catplot()関数で引数kind='bar'とすると、カテゴリごとの平均値を棒グラフで描画し信頼区間をエラーバーで表示
+           sns.catplot(data=tips, x='day', y='total_bill', kind='bar')  
+    
+    引数estimatorにデータ集計する関数を渡す事が出来る       
+           sns.catplot(data=tips, x='day', y='total_bill', kind='bar', estimator=np.median)
+           
+  ・catplot()関数で引数kind='count'とすると、データの個数を棒グラフに描画できる
+           sns.catplot(data=tips, x='day', y='total_bill', kind='bar', estimator=np.median)                         
+
+  ・catplot()関数で引数kind='point'とすると、ポイントプロット(デフォルトは平均値)を描画する                                        sns.catplot(data=tips, x='day', y='total_bill',kind='point')  
+    
+    引数estimatorにデータ集計する関数を渡す事が出来る
+                          
+  ・catplot()関数で引数にcol,rowを使うとサブプロットごとに描画出来る
+           sns.relplot(data=tips, x='total_bill', y='tip',row='smoker', col='time') 
+           
+           
+  ・distplot()関数でヒストグラムとカーネル密度推定グラフを描画する
+    引数でグラフを選択(hist,kde,rug)でき、描画の場合は各引数にTrue,描画しない場合はFalse
+    引数でbinsを設定するとビン数を変更出来る 
+           sns.distplot(tips['total_bill'])             
+           sns.distplot(tips['total_bill'], hist=True, kde=False, rug=True, bins=10)                                                                  
+  ・distplot()関数でヒストグラムを明示的に相対度数にするには引数norm_hist=Trueとする
+           sns.distplot(tips['total_bill'], kde=False, norm_hist=True)                                                  
+  ・distplot()関数で引数fitに確率密度関数を渡すと、任意の分布が表示できる
+           from scipy import stats
+           sns.distplot(tips['total_bill'], kde=False, fit=stats.norm)
+           
+           
+ ・joinplot()関数で2変数の分布を可視化する
+   おもな引数
+   data:対象のdf
+   x:X値となる列
+   y:Y値となる列
+   kind:scatter,reg,resid,kde,hex  
+           sns.jointplot(data=tips, x='tip', y='total_bill')
+           
+        
+ ・lmplot()関数で散布図、回帰モデルから得られた回帰直線、回帰直線の95%信頼区間を描画出来る 
+           sns.lmplot(data=tips, x='tip', y='total_bill')  
+           
+ ・lmplot()関数で信頼区間を変更するには引数ciに0から100までのint型を渡す
+           sns.lmplot(data=tips, x='tip', y='total_bill', ci=80)  
+           
+ ・lmplot()関数で回帰に多項式を使う場合は引数orderに次数を設定する                                 
+           sns.lmplot(data=data, x='x', y='y', order=2)   
+           
+ ・lmplot()関数で引数robust=Trueだとロバスト回帰モデル(外れ値の重みを軽く扱う)を描画する           
+           sns.lmplot(data=data, x='x', y='y', ci=None, robust=True)     
+                            
+ ・joinplot()関数で引数kind='reg'にすると回帰グラフとヒストグラムが描画される
+ 
+ 
+ ・pairplot()関数は引数dataに渡したDataFrameの散布行列を描画する,引数kind='reg'にすると回帰グラフになる
+           sns.pairplot(data=tips, kind='reg')
+           
+           
+■Seabornを使いこなす
+ ・FacetGridクラスを利用することでもカテゴリごとのグラフを描画できる
+   グラフ描画ににはmap()メソッドを用いる
+           facet_grid = sns.FacetGrid(tips, col='time')
+           facet_grid.map(plt.scatter, 'tip', 'total_bill')  
+           
+   seaborn関数を利用する場合
+           facet_grid = sns.FacetGrid(tips, col='time', row='smoker', hue='sex')
+           facet_grid.map(sns.distplot, 'total_bill')     
+           
+           
+ ・PairGridクラスを利用することでも各変数の組み合わせグラフを描画できる
+   グラフ描画ににはmap()メソッドを用いる
+   
+           pair_grid = sns.PairGrid(tips)
+           pair_grid.map(plt.scatter)
+           
+   mapメソッドで描画位置の指定ができ、異なる種類のグラフを描画出来る
+           pair_grid_kinds = sns.PairGrid(tips, hue='smoker')
+           pair_grid_kinds.map_upper(sns.regplot)
+           pair_grid_kinds.map_diag(plt.hist)
+           pair_grid_kinds.map_lower(sns.kdeplot)  
+           
+   PairGridクラスの引数varsに列名をリストで渡すと、描画対象となる列を指定出来る
+           sns.PairGrid(tips, vars=['total_bill', 'tip', 'smoker']).map(sns.scatterplot)    
+           
+   PairGridクラスの引数x_varsにX値を取る列名、y_varsにY値を取る列名を指定出来る
+           sns.PairGrid(tips, x_vars=['total_bill', 'size'], y_vars=['tip']).map(sns.scatterplot)   
+           
+ ・JointGridクラスを利用することで2変数の関係を可視化し、各変数の分布をグラフの辺に追加できる
+           joint_grid = sns.JointGrid(data=tips, x='total_bill', y='tip')
+           joint_grid.plot(plt.scatter, sns.distplot)     
+           
+   Matplotlibメソッド使うと各変数の分布グラフを変更出来る                           
+           joint_grid_ax = sns.JointGrid(data=tips, x='total_bill', y='tip')
+           joint_grid_ax.plot_joint(sns.regplot)
+           joint_grid_ax.ax_marg_x.hist(tips['total_bill'])
+           joint_grid_ax.ax_marg_y.boxplot(tips['tip'])  
+           
+           
+ ・axes-level関数を利用するとサブプロットごとにグラフを描画出来る
+   Matplotlib同様にグラフを重ね書きも可能  
+           sns.boxplot(data=tips, x='total_bill')
+           sns.rugplot(tips['total_bill'])
+           
+   散布図を描画           
+           sns.scatterplot(data=tips, x='total_bill', y='tip', hue='smoker', style='time') 
+                                          
+   折れ線グラフを描画
+           sns.lineplot(data=fmri, x='timepoint', y='signal') 
+           
+   ストリッププロットを描画
+           sns.stripplot(data=tips, x='smoker', y='tip')               
+           
+   ビースウォームプロットを描画
+           sns.swarmplot(data=tips, x='time', y='tip')   
+           
+   箱ひげ図を描画
+           sns.boxplot(data=tips, x='time', y='tip')
+           
+   分位数を増やした描画
+           sns.boxenplot(data=tips, x='day', y='tip', hue='smoker')  
+           
+   バイオリン図を描画する
+           sns.violinplot(data=tips,x='time', y='tip')
+           
+   ポイントプロットを描画する
+           sns.pointplot(data=tips, x='day', y='tip') 
+           
+   棒グラフを描画する
+           sns.barplot(data=tips, x='day', y='tip')  ※平均値が棒グラフになる
+           sns.countplot(data=tips, x='day', y='tip')  ※データの個数が棒グラフになる
+           
+   データの個数をグループ化して描画する           
+           sns.countplot(data=tips, x='day', hue='smoker') 
+           
+   ヒストグラム・カーネル密度推定グラフを描画する           
+           sns.distplot(tips['tip']) 
+           
+   カーネル密度推定グラフを描画する                                                    
+           sns.kdeplot(tips['tip']) 
+           
+   ラグプロットを描画する                                                                                                          sns.rugplot(tips['tip']) 
+   
+   回帰グラフを描画する
+           sns.regplot(data=tips, x='total_bill', y='tip')   
+   
+   回帰線の残差を可視化する
+           sns.residplot(data=tips, x='total_bill', y='tip')
+   
+   ヒートマップの描画
+           sns.heatmap(flights)
+           
+ ・グラフのスタイルや書式を設定するにはset_style()関数を使う
+   引数styleに文字列を渡すと指定したスタイルが適用される    
+   darkgrid, whitegrid, dark, white, ticks       
